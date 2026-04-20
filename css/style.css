@@ -879,10 +879,10 @@ address { font-style: normal; }
   /* panel-desc never shown on front face — lives in panel-back only */
   .panel-desc { display: none !important; }
 
-  /* Long-press hover fix: iOS triggers :hover on long press */
-  .accordion-panel:hover .panel-num,
-  .accordion-panel:hover .panel-h3,
-  .accordion-panel:hover .panel-price {
+  /* Long-press hover fix: iOS triggers :hover on long press — only suppress when not expanded */
+  .accordion-panel:not([data-mobile-state="expanded"]):hover .panel-num,
+  .accordion-panel:not([data-mobile-state="expanded"]):hover .panel-h3,
+  .accordion-panel:not([data-mobile-state="expanded"]):hover .panel-price {
     opacity: 0 !important;
     transform: translateY(8px) !important;
   }
