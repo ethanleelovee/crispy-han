@@ -92,6 +92,7 @@ if (window.innerWidth > 768) {
   // Initialize all panels
   allPanels.forEach(panel => {
     panel.dataset.mobileState = 'collapsed';
+    panel.classList.remove('active');
   });
 
   allPanels.forEach(panel => {

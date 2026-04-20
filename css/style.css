@@ -874,6 +874,9 @@ address { font-style: normal; }
     display: none !important;
   }
 
+  /* panel-desc never shown on front face — lives in panel-back only */
+  .panel-desc { display: none !important; }
+
   .panel-h3 { font-size: 28px; }
   .panel-content { padding: 20px 20px 28px; }
 
