@@ -809,31 +809,99 @@ address { font-style: normal; }
 }
 
 @media (max-width: 768px) {
+  /* --- Fullscreen swipe cards --- */
   .menu-accordion {
-    flex-direction: column;
-    height: auto;
-    min-height: auto;
-    max-height: none;
+    flex-direction: row;
+    overflow-x: scroll;
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    height: 78vh;
+    min-height: 500px;
+    max-height: 700px;
+    gap: 0;
+    margin-left: -40px;
+    width: calc(100% + 80px);
   }
 
+  .menu-accordion::-webkit-scrollbar { display: none; }
+
   .accordion-panel {
-    height: 64px;
     flex: none !important;
+    width: 100% !important;
+    height: 100% !important;
+    scroll-snap-align: start;
   }
 
   .accordion-panel:hover,
   .accordion-panel.active {
-    height: 260px;
     flex: none !important;
+    width: 100% !important;
+    height: 100% !important;
   }
 
-  .panel-title {
-    writing-mode: horizontal-tb;
-    position: absolute;
-    top: 50%;
-    bottom: auto;
-    left: 24px;
-    transform: translateY(-50%);
+  /* Hide vertical label — not needed in swipe mode */
+  .panel-title { display: none; }
+
+  /* Content always visible on mobile */
+  .panel-num,
+  .panel-h3,
+  .panel-price,
+  .panel-desc {
+    opacity: 1 !important;
+    transform: translateY(0) !important;
+    transition: none !important;
+  }
+
+  .panel-h3 { font-size: 30px; }
+
+  /* Stronger overlay so text reads against busy images */
+  .panel-overlay {
+    background: linear-gradient(
+      to top,
+      rgba(28, 18, 8, 0.97) 0%,
+      rgba(28, 18, 8, 0.45) 45%,
+      transparent 68%
+    );
+  }
+
+  .panel-content { padding: 24px 24px 36px; }
+
+  /* Swipe counter */
+  .swipe-counter {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    margin-top: 20px;
+  }
+
+  .swipe-counter__text {
+    font-family: var(--font-display);
+    font-size: 14px;
+    font-weight: 700;
+    letter-spacing: 0.2em;
+    color: var(--cream-dim);
+  }
+
+  .swipe-counter__text span { color: var(--cream); }
+
+  .swipe-dots {
+    display: flex;
+    gap: 6px;
+  }
+
+  .swipe-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--cream-dim);
+    transition: background 0.3s, transform 0.3s;
+  }
+
+  .swipe-dot.active {
+    background: var(--gold);
+    transform: scale(1.4);
   }
 }
 
@@ -848,5 +916,9 @@ address { font-style: normal; }
 
   .hero__scroll-hint { right: 24px; }
 
-  .hero-reveal__img { height: 340px; }
+  /* Adjust negative margin for smaller padding */
+  .menu-accordion {
+    margin-left: -24px;
+    width: calc(100% + 48px);
+  }
 }
