@@ -879,6 +879,9 @@ address { font-style: normal; }
   /* panel-desc never shown on front face — lives in panel-back only */
   .panel-desc { display: none !important; }
 
+  /* Keep title badge visible on long-press of collapsed panels */
+  .accordion-panel[data-mobile-state="collapsed"]:hover .panel-title { opacity: 1; }
+
   /* Long-press hover fix: iOS triggers :hover on long press — only suppress when not expanded */
   .accordion-panel:not([data-mobile-state="expanded"]):hover .panel-num,
   .accordion-panel:not([data-mobile-state="expanded"]):hover .panel-h3,
