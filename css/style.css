@@ -809,100 +809,63 @@ address { font-style: normal; }
 }
 
 @media (max-width: 768px) {
-  /* --- Fullscreen swipe cards --- */
+  /* A+B: Vertical accordion, stagger entrance + expand zoom */
   .menu-accordion {
-    flex-direction: row;
-    overflow-x: scroll;
-    scroll-snap-type: x mandatory;
-    -webkit-overflow-scrolling: touch;
-    scrollbar-width: none;
-    height: 78vh;
-    min-height: 500px;
-    max-height: 700px;
-    gap: 0;
-    margin-left: -40px;
-    width: calc(100% + 80px);
+    flex-direction: column;
+    height: auto;
+    min-height: auto;
+    max-height: none;
   }
 
-  .menu-accordion::-webkit-scrollbar { display: none; }
-
   .accordion-panel {
+    height: 72px;
     flex: none !important;
-    width: 100% !important;
-    height: 100% !important;
-    scroll-snap-align: start;
+    /* B: smooth expand */
+    transition: height 0.7s cubic-bezier(0.16, 1, 0.3, 1);
   }
 
   .accordion-panel:hover,
   .accordion-panel.active {
+    height: 280px;
     flex: none !important;
-    width: 100% !important;
-    height: 100% !important;
   }
 
-  /* Hide vertical label — not needed in swipe mode */
-  .panel-title { display: none; }
+  /* B: more dramatic image zoom on expand */
+  .panel-bg {
+    transition: transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+  }
 
-  /* Content always visible on mobile */
+  .accordion-panel.active .panel-bg {
+    transform: scale(1.07);
+  }
+
+  /* Panel title: horizontal + dark badge for readability */
+  .panel-title {
+    writing-mode: horizontal-tb;
+    position: absolute;
+    top: 50%;
+    bottom: auto;
+    left: 20px;
+    transform: translateY(-50%);
+    color: var(--cream);
+    font-size: 13px;
+    letter-spacing: 0.18em;
+    background: rgba(18, 10, 2, 0.65);
+    padding: 6px 14px;
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+  }
+
+  /* Content fade-up on expand */
   .panel-num,
   .panel-h3,
   .panel-price,
   .panel-desc {
-    opacity: 1 !important;
-    transform: translateY(0) !important;
-    transition: none !important;
+    transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
   }
 
-  .panel-h3 { font-size: 30px; }
-
-  /* Stronger overlay so text reads against busy images */
-  .panel-overlay {
-    background: linear-gradient(
-      to top,
-      rgba(28, 18, 8, 0.97) 0%,
-      rgba(28, 18, 8, 0.45) 45%,
-      transparent 68%
-    );
-  }
-
-  .panel-content { padding: 24px 24px 36px; }
-
-  /* Swipe counter */
-  .swipe-counter {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 12px;
-    margin-top: 20px;
-  }
-
-  .swipe-counter__text {
-    font-family: var(--font-display);
-    font-size: 14px;
-    font-weight: 700;
-    letter-spacing: 0.2em;
-    color: var(--cream-dim);
-  }
-
-  .swipe-counter__text span { color: var(--cream); }
-
-  .swipe-dots {
-    display: flex;
-    gap: 6px;
-  }
-
-  .swipe-dot {
-    width: 6px;
-    height: 6px;
-    border-radius: 50%;
-    background: var(--cream-dim);
-    transition: background 0.3s, transform 0.3s;
-  }
-
-  .swipe-dot.active {
-    background: var(--gold);
-    transform: scale(1.4);
-  }
+  .panel-h3 { font-size: 28px; }
+  .panel-content { padding: 20px 20px 28px; }
 }
 
 @media (max-width: 640px) {
@@ -915,10 +878,4 @@ address { font-style: normal; }
   .footer { padding: 40px 24px; }
 
   .hero__scroll-hint { right: 24px; }
-
-  /* Adjust negative margin for smaller padding */
-  .menu-accordion {
-    margin-left: -24px;
-    width: calc(100% + 48px);
-  }
 }

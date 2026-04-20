@@ -72,7 +72,9 @@ document.querySelectorAll('.fade-up').forEach(el => revealObserver.observe(el));
 
 /* =============================================
    MODULE 11: ACCORDION SLIDER
-   Desktop: click to lock. Mobile: swipe counter.
+   Desktop: click to lock active.
+   Mobile A: GSAP stagger entrance.
+   Mobile B: image zoom on expand (CSS).
    ============================================= */
 document.querySelectorAll('.accordion-panel').forEach(panel => {
   panel.addEventListener('click', () => {
@@ -82,49 +84,26 @@ document.querySelectorAll('.accordion-panel').forEach(panel => {
   });
 });
 
-/* --- Mobile swipe counter --- */
+/* --- A: Mobile stagger entrance --- */
 (function() {
-  const accordion = document.querySelector('.menu-accordion');
-  if (!accordion) return;
+  if (window.innerWidth > 768) return;
 
-  const isMobile = () => window.innerWidth <= 768;
-  const panels = accordion.querySelectorAll('.accordion-panel');
-  const total = panels.length;
+  const panels = gsap.utils.toArray('.accordion-panel');
 
-  let counter, dots;
+  gsap.set(panels, { opacity: 0, y: 48 });
 
-  function buildUI() {
-    if (!isMobile()) return;
-    if (document.querySelector('.swipe-counter')) return;
-
-    // Counter: 01 / 04
-    counter = document.createElement('div');
-    counter.className = 'swipe-counter';
-    counter.innerHTML = `
-      <div class="swipe-dots">
-        ${Array.from({length: total}, (_, i) =>
-          `<span class="swipe-dot${i === 0 ? ' active' : ''}"></span>`
-        ).join('')}
-      </div>
-      <span class="swipe-counter__text"><span class="swipe-current">01</span> / 0${total}</span>
-    `;
-    accordion.parentElement.insertBefore(counter, accordion.nextSibling);
-    dots = counter.querySelectorAll('.swipe-dot');
-  }
-
-  function updateCounter(index) {
-    if (!dots) return;
-    dots.forEach((d, i) => d.classList.toggle('active', i === index));
-    const currentEl = counter.querySelector('.swipe-current');
-    if (currentEl) currentEl.textContent = String(index + 1).padStart(2, '0');
-  }
-
-  accordion.addEventListener('scroll', () => {
-    if (!isMobile()) return;
-    const index = Math.round(accordion.scrollLeft / accordion.offsetWidth);
-    updateCounter(index);
-  }, { passive: true });
-
-  buildUI();
-  window.addEventListener('resize', buildUI);
+  ScrollTrigger.create({
+    trigger: '.menu-accordion',
+    start: 'top 82%',
+    once: true,
+    onEnter() {
+      gsap.to(panels, {
+        opacity: 1,
+        y: 0,
+        duration: 0.7,
+        stagger: 0.12,
+        ease: 'power3.out'
+      });
+    }
+  });
 })();
