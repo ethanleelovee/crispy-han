@@ -73,37 +73,109 @@ document.querySelectorAll('.fade-up').forEach(el => revealObserver.observe(el));
 /* =============================================
    MODULE 11: ACCORDION SLIDER
    Desktop: click to lock active.
-   Mobile A: GSAP stagger entrance.
-   Mobile B: image zoom on expand (CSS).
+   Mobile: 3-state machine (collapsed/expanded/flipped) + stagger entrance.
    ============================================= */
-document.querySelectorAll('.accordion-panel').forEach(panel => {
-  panel.addEventListener('click', () => {
-    panel.parentElement.querySelectorAll('.accordion-panel')
-      .forEach(p => p.classList.remove('active'));
-    panel.classList.add('active');
+const allPanels = Array.from(document.querySelectorAll('.accordion-panel'));
+
+if (window.innerWidth > 768) {
+  /* --- Desktop: standard accordion --- */
+  allPanels.forEach(panel => {
+    panel.addEventListener('click', () => {
+      allPanels.forEach(p => p.classList.remove('active'));
+      panel.classList.add('active');
+    });
   });
-});
 
-/* --- A: Mobile stagger entrance --- */
-(function() {
-  if (window.innerWidth > 768) return;
+} else {
+  /* --- Mobile: 3-state machine --- */
 
-  const panels = gsap.utils.toArray('.accordion-panel');
+  // Initialize all panels
+  allPanels.forEach(panel => {
+    panel.dataset.mobileState = 'collapsed';
+  });
 
-  gsap.set(panels, { opacity: 0, y: 48 });
+  allPanels.forEach(panel => {
+    panel.addEventListener('click', () => mobileTap(panel));
+  });
 
+  function mobileTap(tapped) {
+    const state = tapped.dataset.mobileState;
+    const flippedOther = allPanels.find(p => p !== tapped && p.dataset.mobileState === 'flipped');
+
+    if (flippedOther) {
+      // State 3 + tap different → collapse flipped, expand tapped
+      collapse(flippedOther);
+      expand(tapped);
+      return;
+    }
+
+    if (state === 'collapsed') {
+      allPanels.forEach(p => { if (p !== tapped && p.dataset.mobileState === 'expanded') collapse(p); });
+      expand(tapped);
+    } else if (state === 'expanded') {
+      flipToBack(tapped);
+    } else if (state === 'flipped') {
+      flipToFront(tapped);
+    }
+  }
+
+  function expand(panel) {
+    panel.dataset.mobileState = 'expanded';
+    const back = panel.querySelector('.panel-back');
+    if (back) back.style.display = 'none';
+    frontVisible(panel, true);
+    gsap.to(panel.querySelector('.panel-bg'), { scale: 1.06, duration: 0.7, ease: 'power2.out' });
+  }
+
+  function collapse(panel) {
+    panel.dataset.mobileState = 'collapsed';
+    const back = panel.querySelector('.panel-back');
+    if (back) back.style.display = 'none';
+    frontVisible(panel, true);
+    gsap.to(panel.querySelector('.panel-bg'), { scale: 1, duration: 0.5, ease: 'power2.out' });
+    gsap.set(panel, { rotateY: 0 });
+  }
+
+  function flipToBack(panel) {
+    panel.dataset.mobileState = 'flipped';
+    const back = panel.querySelector('.panel-back');
+    gsap.timeline()
+      .to(panel, { rotateY: 90, duration: 0.22, ease: 'power2.in' })
+      .call(() => {
+        frontVisible(panel, false);
+        if (back) { back.style.display = 'flex'; }
+        gsap.set(panel, { rotateY: -90 });
+      })
+      .to(panel, { rotateY: 0, duration: 0.22, ease: 'power2.out' });
+  }
+
+  function flipToFront(panel) {
+    panel.dataset.mobileState = 'expanded';
+    const back = panel.querySelector('.panel-back');
+    gsap.timeline()
+      .to(panel, { rotateY: 90, duration: 0.22, ease: 'power2.in' })
+      .call(() => {
+        frontVisible(panel, true);
+        if (back) { back.style.display = 'none'; }
+        gsap.set(panel, { rotateY: -90 });
+      })
+      .to(panel, { rotateY: 0, duration: 0.22, ease: 'power2.out' });
+  }
+
+  function frontVisible(panel, visible) {
+    const v = visible ? '' : 'hidden';
+    panel.querySelectorAll('.panel-bg, .panel-overlay, .panel-title, .panel-content')
+      .forEach(el => el.style.visibility = v);
+  }
+
+  /* --- A: Stagger entrance --- */
+  gsap.set(allPanels, { opacity: 0, y: 48 });
   ScrollTrigger.create({
     trigger: '.menu-accordion',
     start: 'top 82%',
     once: true,
     onEnter() {
-      gsap.to(panels, {
-        opacity: 1,
-        y: 0,
-        duration: 0.7,
-        stagger: 0.12,
-        ease: 'power3.out'
-      });
+      gsap.to(allPanels, { opacity: 1, y: 0, duration: 0.7, stagger: 0.12, ease: 'power3.out' });
     }
   });
-})();
+}
